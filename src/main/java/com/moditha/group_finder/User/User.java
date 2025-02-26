@@ -1,6 +1,5 @@
 package com.moditha.group_finder.User;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

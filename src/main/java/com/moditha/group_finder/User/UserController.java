@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/auth")
@@ -15,15 +17,30 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    private Map<String, String> sessionStore = new HashMap<>(); // local session store
+
     //Login Validation
-    //if user available return user data if not return error
     @PostMapping ("/login")
     public @ResponseBody ResponseEntity<?> login(@RequestBody Map<String, String> body) {
-        Optional<User> user = userService.findUser(body.get("username"), body.get("password"));
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
+        Optional<User> user = userService.findUser(body.get("username"));
+        if (user.isPresent() && user.get().getPassword().equals(body.get("password"))) {
+            String token = UUID.randomUUID().toString(); // generate unique token
+            sessionStore.put(token, body.get("username"));
+            LoginResponse loginResponse = new LoginResponse("Success", token, user.get().getFirstname(), user.get().getLastname(), user.get().getEmail(), user.get().getRole());
+            return ResponseEntity.ok(loginResponse);
+        } else if (user.isPresent() && !user.get().getPassword().equals(body.get("password"))) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid password"));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+        else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "User not found"));
+        }
+    }
+
+    //not tested yet
+    @PostMapping("/logout")
+    public @ResponseBody ResponseEntity<?> logout(@RequestHeader("session-id") String sessionId) {
+        sessionStore.remove(sessionId);
+        return ResponseEntity.ok("success");
     }
 
     @PostMapping("/register")
