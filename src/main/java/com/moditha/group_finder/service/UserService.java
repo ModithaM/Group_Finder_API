@@ -3,6 +3,7 @@ package com.moditha.group_finder.service;
 import com.moditha.group_finder.model.User;
 import com.moditha.group_finder.model.dto.LoginRequestDTO;
 import com.moditha.group_finder.model.dto.RegisterRequestDTO;
+import com.moditha.group_finder.model.enums.Role;
 import com.moditha.group_finder.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -48,6 +49,7 @@ public class UserService {
         newUser.setSkills(registerRequest.getSkills());
         newUser.setGithub(registerRequest.getGithub());
         newUser.setLinkedin(registerRequest.getLinkedin());
+        newUser.setRole(Role.MEMBER);
 
         if(userRepository.findByUsername(newUser.getUsername()).isPresent()){
             return false;

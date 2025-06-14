@@ -1,5 +1,6 @@
 package com.moditha.group_finder.model;
 
+import com.moditha.group_finder.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,9 +8,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +39,8 @@ public class User implements UserDetails {
     private String github;
     private String linkedin;
     private String profilePicture;
+    @Enumerated(EnumType.STRING)
+    private Role role;
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
@@ -47,7 +50,7 @@ public class User implements UserDetails {
     //GrantedAuthority used to config role based access
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
     }
 
     @Override

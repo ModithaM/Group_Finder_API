@@ -9,6 +9,9 @@ import com.moditha.group_finder.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,19 +36,35 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
-        LoginResponseDTO loginResponseDTO = null;
         try {
             User authenticatedUser = userService.login(loginRequest);
             String jwtToken = jwtService.generateToken(authenticatedUser);
-            loginResponseDTO = new LoginResponseDTO();
+
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
             loginResponseDTO.setToken(jwtToken);
             loginResponseDTO.setUser(authenticatedUser);
             loginResponseDTO.setExpiresIn(jwtService.getExpirationTime());
-            return new ResponseEntity<>(loginResponseDTO, HttpStatus.OK);
+
+            return ResponseEntity.ok(loginResponseDTO);
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid username or password"));
+
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "User not found"));
+
+        } catch (DisabledException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "User account is disabled"));
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Login failed!"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Login failed due to an internal error"));
         }
     }
+
 
 
     /**
