@@ -1,8 +1,10 @@
 package com.moditha.group_finder.controller;
 
+import com.moditha.group_finder.model.User;
 import com.moditha.group_finder.model.dto.LoginRequestDTO;
 import com.moditha.group_finder.model.dto.LoginResponseDTO;
 import com.moditha.group_finder.model.dto.RegisterRequestDTO;
+import com.moditha.group_finder.service.JwtService;
 import com.moditha.group_finder.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import java.util.Map;
 public class AuthController {
     @Autowired
     UserService userService;
+    @Autowired
+    JwtService jwtService;
 
     /**
      * Authenticate student and return JWT token with user info.
@@ -29,15 +33,15 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
-        LoginResponseDTO response = null;
+        LoginResponseDTO loginResponseDTO = null;
         try {
-            response = null;
-            if(response != null) {
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Login failed! Username or Password is incorrect!"));
-            }
+            User authenticatedUser = userService.login(loginRequest);
+            String jwtToken = jwtService.generateToken(authenticatedUser);
+            loginResponseDTO = new LoginResponseDTO();
+            loginResponseDTO.setToken(jwtToken);
+            loginResponseDTO.setUser(authenticatedUser);
+            loginResponseDTO.setExpiresIn(jwtService.getExpirationTime());
+            return new ResponseEntity<>(loginResponseDTO, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Login failed!"));
         }
