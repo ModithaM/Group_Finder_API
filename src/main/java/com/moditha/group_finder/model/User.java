@@ -27,10 +27,22 @@ public class User {
     private int year;
     private int semester;
     private String bio;
+    @ElementCollection
     private List<String> skills;
     private String github;
     private String linkedin;
     private String profilePicture;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
 }
