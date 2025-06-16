@@ -5,7 +5,7 @@ import com.moditha.group_finder.model.dto.LoginRequestDTO;
 import com.moditha.group_finder.model.dto.LoginResponseDTO;
 import com.moditha.group_finder.model.dto.RegisterRequestDTO;
 import com.moditha.group_finder.service.JwtService;
-import com.moditha.group_finder.service.UserService;
+import com.moditha.group_finder.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    UserService userService;
+    AuthService authService;
     @Autowired
     JwtService jwtService;
 
@@ -37,7 +37,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
         try {
-            User authenticatedUser = userService.login(loginRequest);
+            User authenticatedUser = authService.login(loginRequest);
             String jwtToken = jwtService.generateToken(authenticatedUser);
 
             LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
@@ -77,7 +77,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO registerRequest) {
         try {
-            if(userService.addUser(registerRequest)) {
+            if(authService.addUser(registerRequest)) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!"));
             }
             else {
