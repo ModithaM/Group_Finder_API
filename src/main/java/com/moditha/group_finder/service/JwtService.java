@@ -1,8 +1,7 @@
 package com.moditha.group_finder.service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.moditha.group_finder.exceptions.JwtValidationException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
@@ -25,7 +24,17 @@ public class JwtService {
 
     // Extracting username from JWT token
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        try {
+            return extractClaim(token, Claims::getSubject);
+        } catch (ExpiredJwtException e) {
+            throw new JwtValidationException("Token expired", e);
+        } catch (MalformedJwtException e) {
+            throw new JwtValidationException("Malformed token", e);
+        } catch (SignatureException e) {
+            throw new JwtValidationException("Invalid token signature", e);
+        } catch (Exception e) {
+            throw new JwtValidationException("Invalid token", e);
+        }
     }
 
     // Extracting roles from JWT token

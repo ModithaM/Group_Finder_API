@@ -1,5 +1,6 @@
 package com.moditha.group_finder.filter;
 
+import com.moditha.group_finder.exceptions.JwtValidationException;
 import com.moditha.group_finder.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -64,9 +65,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-
             filterChain.doFilter(request, response);
-        } catch (Exception exception) {
+        }
+        catch (JwtValidationException e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+        catch (Exception exception) {
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
     }
