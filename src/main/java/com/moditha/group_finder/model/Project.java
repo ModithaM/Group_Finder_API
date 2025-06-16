@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,11 +24,14 @@ public class Project {
     private String moduleCode;
     private String moduleName;
     private int creatorId;
-    private String maxMembers;
-    private String currentMembers;
+    private int maxMembers;
+    private int currentMembers;
+    @ElementCollection
     private List<String> requiredSkills;
     @Enumerated(EnumType.STRING)
     private Status status;
+    @CreationTimestamp
     private LocalDateTime createdAt;
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
