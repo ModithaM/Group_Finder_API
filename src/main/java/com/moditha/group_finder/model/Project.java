@@ -1,6 +1,7 @@
 package com.moditha.group_finder.model;
 
 import com.moditha.group_finder.model.enums.Status;
+import com.moditha.group_finder.model.enums.Technologies;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -26,8 +26,10 @@ public class Project {
     private int creatorId;
     private int maxMembers;
     private int currentMembers;
-    @ElementCollection
-    private List<String> requiredSkills;
+    @Enumerated(EnumType.STRING)
+    private Technologies frontendTechnology;
+    @Enumerated(EnumType.STRING)
+    private Technologies backendTechnology;
     @Enumerated(EnumType.STRING)
     private Status status;
     @CreationTimestamp

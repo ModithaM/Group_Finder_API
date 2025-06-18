@@ -1,17 +1,18 @@
 package com.moditha.group_finder.controller;
 
 import com.moditha.group_finder.exceptions.ServerErrorException;
+import com.moditha.group_finder.model.Project;
 import com.moditha.group_finder.model.dto.ProjectDTO;
+import com.moditha.group_finder.model.dto.ProjectFilterDTO;
 import com.moditha.group_finder.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 import java.util.Map;
 
 @RestController
@@ -25,7 +26,7 @@ public class ProjectController {
      *
      * @param project details of the project to be created.
      * @return Project object if creation is successful, or an error message if it fails.
-     * @apiNote This is a private endpoint. No authentication required to access it.
+     * @apiNote This is a private endpoint. authentication required to access it.
      */
     @PostMapping("/create")
     public ResponseEntity<?> createProject(@Valid @RequestBody ProjectDTO project) {
@@ -34,6 +35,42 @@ public class ProjectController {
         } catch (ServerErrorException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Project Creation failed due to an internal error"));
+        }
+    }
+
+    /**
+     * Get all open projects with filtering.
+     *
+     * @param courseId ,skills , specialization to filter projects.
+     * @return Paginated list of projects.
+     * @apiNote This is a private endpoint. authentication required to access it.
+     */
+    @GetMapping
+    public ResponseEntity<?> getAllOpenProjects(
+            @RequestParam(required = false) String courseId,
+            @RequestParam(required = false) String frontendTechnology,
+            @RequestParam(required = false) String backendTechnology,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size ) {
+
+        try {
+            ProjectFilterDTO filter = ProjectFilterDTO.builder()
+                    .courseId(courseId)
+                    .frontendTechnology(frontendTechnology)
+                    .backendTechnology(backendTechnology)
+                    .build();
+
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Project> projects = projectService.getAllOpenProjects(filter, pageable);
+
+            return ResponseEntity.ok(projects);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred while fetching projects"));
         }
     }
 }
