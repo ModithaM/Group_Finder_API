@@ -6,6 +6,7 @@ import com.moditha.group_finder.model.dto.LoginResponseDTO;
 import com.moditha.group_finder.model.dto.RegisterRequestDTO;
 import com.moditha.group_finder.service.JwtService;
 import com.moditha.group_finder.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,13 +76,13 @@ public class AuthController {
      * @apiNote This is a public endpoint. No authentication required to access it.
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO registerRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {
         try {
             if(authService.addUser(registerRequest)) {
                 return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!"));
             }
             else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Username already exists!"));
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Username already exists!"));
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "User registration failed!"));
