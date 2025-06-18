@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.List;
+
 
 @Data
 public class ProjectDTO {
@@ -15,10 +17,13 @@ public class ProjectDTO {
     @NotBlank(message = "Module Code is required")
     private String moduleCode;
     private String moduleName;
+    @NotBlank(message = "Frontend Technology is required")
     private Technologies frontendTechnology;
+    @NotBlank(message = "Backend Technology is required")
     private Technologies backendTechnology;
     @NotNull(message = "CreatorID is required")
     private int creatorId;
     private int maxMembers;
     private Status status;
+    private List<ProjectMemberDTO> projectMembers;
 }

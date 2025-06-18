@@ -73,4 +73,26 @@ public class ProjectController {
                     .body(Map.of("error", "An error occurred while fetching projects"));
         }
     }
+
+
+    /**
+     * Get projects by id.
+     *
+     * @param id of the project to be fetched.
+     * @return Project with members.
+     * @apiNote This is a private endpoint. authentication required to access it.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProjectById(@PathVariable int id) {
+        try {
+            ProjectDTO project = projectService.getProjectById(id);
+            return ResponseEntity.ok(project);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred while fetching the project"));
+        }
+    }
 }
