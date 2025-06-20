@@ -5,6 +5,7 @@ import com.moditha.group_finder.model.dto.ProjectMemberDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,4 +16,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
             "JOIN User u ON pm.memberId = u.id " +
             "WHERE pm.projectId = :projectId")
     List<ProjectMemberDTO> findMembersByProjectId(@Param("projectId") int projectId);
+
+    @Transactional
+    void deleteByProjectId(int projectId);
 }

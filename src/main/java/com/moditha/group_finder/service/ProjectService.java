@@ -129,5 +129,24 @@ public class ProjectService {
         return projectDTO;
     }
 
+    //delete project by id
+    public void deleteProjectById(int id,int uid) {
+        Project project = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + id));
+
+        // Ensure the project creator is the one trying to delete it
+        if (project.getCreatorId() == uid) {
+            try {
+                projectMemberService.deleteProjectMembersByProjectId(id);
+            } catch (ServerErrorException e) {
+                throw new IllegalArgumentException(e);
+            }
+            repository.delete(project);
+        }
+        else{
+            throw new IllegalArgumentException("Only Creator can delete the project");
+        }
+    }
+
 
 }

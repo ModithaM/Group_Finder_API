@@ -34,4 +34,12 @@ public class ProjectMemberService {
             throw new ServerErrorException("Failed to retrieve project members: " + e.getMessage());
         }
     }
+
+    public void deleteProjectMembersByProjectId(int projectId) {
+        try {
+            projectMemberRepository.deleteByProjectId(projectId);
+        } catch (Exception e) {
+            throw new ServerErrorException("Failed to delete project members: " + e.getMessage());
+        }
+    }
 }

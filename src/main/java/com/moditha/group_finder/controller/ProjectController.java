@@ -95,4 +95,26 @@ public class ProjectController {
                     .body(Map.of("error", "An error occurred while fetching the project"));
         }
     }
+
+
+    /**
+     * Delete a project by id.
+     *
+     * @param id of the project to be deleted.
+     * @return Success message if deletion is successful, or an error message if it fails.
+     * @apiNote This is a private endpoint. authentication required to access it.
+     */
+    @DeleteMapping("/{id}/user/{uid}")
+    public ResponseEntity<?> deleteProject(@PathVariable int id, @PathVariable int uid) {
+        try {
+            projectService.deleteProjectById(id, uid);
+            return ResponseEntity.ok(Map.of("message", "Project deleted successfully"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred while deleting the project"));
+        }
+    }
 }
