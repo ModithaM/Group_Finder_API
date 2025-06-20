@@ -2,6 +2,7 @@ package com.moditha.group_finder.service;
 
 import com.moditha.group_finder.exceptions.ServerErrorException;
 import com.moditha.group_finder.model.Project;
+import com.moditha.group_finder.model.dto.BaseProjectDTO;
 import com.moditha.group_finder.model.dto.ProjectDTO;
 import com.moditha.group_finder.model.dto.ProjectFilterDTO;
 import com.moditha.group_finder.model.dto.ProjectMemberDTO;
@@ -148,5 +149,27 @@ public class ProjectService {
         }
     }
 
+    //update project by id
+    public ProjectDTO updateProjectById(int id, int uid, BaseProjectDTO project) {
+        Project existingProject = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + id));
+
+        if (existingProject.getCreatorId() != uid) {
+            throw new IllegalArgumentException("Only Creator can update the project");
+        }
+
+        // Update project details
+        existingProject.setTitle(project.getTitle());
+        existingProject.setDescription(project.getDescription());
+        existingProject.setModuleCode(project.getModuleCode());
+        existingProject.setModuleName(project.getModuleName());
+        existingProject.setMaxMembers(project.getMaxMembers());
+        existingProject.setFrontendTechnology(project.getFrontendTechnology());
+        existingProject.setBackendTechnology(project.getBackendTechnology());
+        existingProject.setStatus(project.getStatus());
+        repository.save(existingProject);
+
+        return getProjectById(id);
+    }
 
 }

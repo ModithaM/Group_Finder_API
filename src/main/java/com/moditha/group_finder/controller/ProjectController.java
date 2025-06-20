@@ -2,6 +2,7 @@ package com.moditha.group_finder.controller;
 
 import com.moditha.group_finder.exceptions.ServerErrorException;
 import com.moditha.group_finder.model.Project;
+import com.moditha.group_finder.model.dto.BaseProjectDTO;
 import com.moditha.group_finder.model.dto.ProjectDTO;
 import com.moditha.group_finder.model.dto.ProjectFilterDTO;
 import com.moditha.group_finder.service.ProjectService;
@@ -96,6 +97,25 @@ public class ProjectController {
         }
     }
 
+    /**
+     * Update a project by id.
+     *
+     * @param project details to update the project.
+     * @return Updated Project object if successful, or an error message if it fails.
+     * @apiNote This is a private endpoint. authentication required to access it.
+     */
+    @PutMapping("/{id}/user/{uid}")
+    public ResponseEntity<?> updateProject(@PathVariable int id, @PathVariable int uid,@Valid @RequestBody BaseProjectDTO project) {
+        try {
+            return ResponseEntity.ok().body(projectService.updateProjectById(id, uid, project));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred while updating the project"));
+        }
+    }
 
     /**
      * Delete a project by id.
