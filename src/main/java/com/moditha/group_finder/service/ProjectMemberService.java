@@ -1,6 +1,7 @@
 package com.moditha.group_finder.service;
 
 import com.moditha.group_finder.exceptions.ServerErrorException;
+import com.moditha.group_finder.model.Project;
 import com.moditha.group_finder.model.ProjectMember;
 import com.moditha.group_finder.model.dto.ProjectMemberDTO;
 import com.moditha.group_finder.model.enums.Role;
@@ -41,5 +42,16 @@ public class ProjectMemberService {
         } catch (Exception e) {
             throw new ServerErrorException("Failed to delete project members: " + e.getMessage());
         }
+    }
+
+    //get joined project by userid
+    public List<Project> getJoinedProjects(int uid) {
+        List<Project> project = null;
+        try {
+            project = projectMemberRepository.findJoinedProjectsByUserIdAndRole(uid);
+        } catch (Exception e) {
+            throw new ServerErrorException("Error fetching joined projects for user with id: " + uid + ". " + e.getMessage());
+        }
+        return project;
     }
 }

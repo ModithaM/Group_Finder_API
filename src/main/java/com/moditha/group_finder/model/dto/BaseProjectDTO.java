@@ -25,4 +25,5 @@ public class BaseProjectDTO {
     private Technologies backendTechnology;
     private int maxMembers;
     private Status status;
+    private int creatorId;
 }

@@ -1,11 +1,9 @@
 package com.moditha.group_finder.service;
 
 import com.moditha.group_finder.exceptions.ServerErrorException;
+import com.moditha.group_finder.mappers.ProjectToBaseprojectDTO;
 import com.moditha.group_finder.model.Project;
-import com.moditha.group_finder.model.dto.BaseProjectDTO;
-import com.moditha.group_finder.model.dto.ProjectDTO;
-import com.moditha.group_finder.model.dto.ProjectFilterDTO;
-import com.moditha.group_finder.model.dto.ProjectMemberDTO;
+import com.moditha.group_finder.model.dto.*;
 import com.moditha.group_finder.model.enums.Role;
 import com.moditha.group_finder.model.enums.Status;
 import com.moditha.group_finder.model.enums.Technologies;
@@ -107,28 +105,20 @@ public class ProjectService {
         };
     }
 
-    //get project by id
-    public ProjectDTO getProjectById(int id) {
+
+    public ProjectDTO getProjectAndUsersById(int id) {
+
         Project project = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found with id: " + id));
 
-        ProjectDTO projectDTO = new ProjectDTO();
-        projectDTO.setTitle(project.getTitle());
-        projectDTO.setDescription(project.getDescription());
-        projectDTO.setModuleCode(project.getModuleCode());
-        projectDTO.setModuleName(project.getModuleName());
-        projectDTO.setCreatorId(project.getCreatorId());
-        projectDTO.setMaxMembers(project.getMaxMembers());
-        projectDTO.setStatus(project.getStatus());
-        projectDTO.setFrontendTechnology(project.getFrontendTechnology());
-        projectDTO.setBackendTechnology(project.getBackendTechnology());
-
+        ProjectDTO projectDTO = ProjectToBaseprojectDTO.mapToProjectDTO(project);
         // Fetch and set project members
         List<ProjectMemberDTO> members = projectMemberService.getProjectMembersByProjectId(id);
         projectDTO.setProjectMembers(members);
 
         return projectDTO;
     }
+
 
     //delete project by id
     public void deleteProjectById(int id,int uid) {
@@ -169,7 +159,28 @@ public class ProjectService {
         existingProject.setStatus(project.getStatus());
         repository.save(existingProject);
 
-        return getProjectById(id);
+        return getProjectAndUsersById(id);
+    }
+
+    //get created project by userid
+    public List<Project> getCreatedProjects(int uid) {
+        List<Project> project = null;
+        try {
+            project = repository.findByCreatorId(uid);
+        } catch (Exception e) {
+            throw new ServerErrorException("Error fetching created projects for user with id: " + uid + ". " + e.getMessage());
+        }
+
+        return project;
+    }
+
+
+    //get joined/created projects by user id
+    public MyProjectsDTO getMyProjects(int uid) {
+        MyProjectsDTO myProjectsDTO = new MyProjectsDTO();
+        myProjectsDTO.setCreatedProjects(getCreatedProjects(uid));
+        myProjectsDTO.setJoinedProjects(projectMemberService.getJoinedProjects(uid));
+        return  myProjectsDTO;
     }
 
 }

@@ -11,6 +11,5 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true) // Important: call parent's equals/hashCode
 @ToString(callSuper = true)
 public class ProjectDTO extends BaseProjectDTO {
-    private int creatorId;
     private List<ProjectMemberDTO> projectMembers;
 }

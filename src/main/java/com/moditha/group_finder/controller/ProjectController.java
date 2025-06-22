@@ -86,7 +86,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getProjectById(@PathVariable int id) {
         try {
-            ProjectDTO project = projectService.getProjectById(id);
+            ProjectDTO project = projectService.getProjectAndUsersById(id);
             return ResponseEntity.ok(project);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -94,6 +94,26 @@ public class ProjectController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "An error occurred while fetching the project"));
+        }
+    }
+
+    /**
+     * Get all projects created/joined by a specific user.
+     *
+     * @param uid of the user whose projects are to be fetched.
+     * @return List of projects created/joined by the user.
+     * @apiNote This is a private endpoint. authentication required to access it.
+     */
+    @GetMapping("/my/{uid}")
+    public ResponseEntity<?> getProjectsByUserId(@PathVariable int uid) {
+        try {
+            return ResponseEntity.ok(projectService.getMyProjects(uid));
+        } catch (ServerErrorException e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An error occurred while fetching the user's projects"));
         }
     }
 
