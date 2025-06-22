@@ -49,4 +49,24 @@ public class JoinRequestController {
                     .body(Map.of("error", "Failed to retrieve join requests"));
         }
     }
+
+    /**
+     * Update the status of a join request.
+     *
+     * @param requestId the ID of the join request to update.
+     * @param status    the new status of the join request (e.g., "APPROVED", "REJECTED").
+     * @return ResponseEntity with a success message.
+     * @apiNote This is a private endpoint. Authentication required to access it.
+     */
+    @PutMapping("/requests/{requestId}")
+    public ResponseEntity<?> updateJoinRequestStatus(@PathVariable int requestId, @RequestParam String status) {
+        try {
+            //status values: "APPROVED", "REJECTED"
+            joinRequestService.updateJoinRequestStatus(requestId, status);
+            return ResponseEntity.ok(Map.of("message", "Join request status updated successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to update join request status"));
+        }
+    }
 }
