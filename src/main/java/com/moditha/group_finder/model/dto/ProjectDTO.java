@@ -8,7 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true) // Important: call parent's equals/hashCode
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class ProjectDTO extends BaseProjectDTO {
     private List<ProjectMemberDTO> projectMembers;

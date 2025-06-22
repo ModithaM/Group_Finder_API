@@ -1,0 +1,52 @@
+package com.moditha.group_finder.controller;
+
+import com.moditha.group_finder.model.dto.JoinRequestDTO;
+import com.moditha.group_finder.service.JoinRequestService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/member")
+public class JoinRequestController {
+    @Autowired
+    private JoinRequestService joinRequestService;
+
+    /**
+     * Create a new join request.
+     *
+     * @param joinRequestDTO details of the join request to be created.
+     * @return ResponseEntity with a success message.
+     * @apiNote This is a private endpoint. Authentication required to access it.
+     */
+    @PostMapping("/join-request")
+    public ResponseEntity<?> createJoinRequest(@RequestBody JoinRequestDTO joinRequestDTO) {
+        try {
+            joinRequestService.createJoinRequest(joinRequestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Project Request created successfully!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Project Creation failed due to an internal error"));
+        }
+    }
+
+    /**
+     * Get all join requests for a specific project.
+     *
+     * @param projectId the ID of the project to get join requests for.
+     * @return ResponseEntity with a list of join requests.
+     * @apiNote This is a private endpoint. Authentication required to access it.
+     */
+    @GetMapping("/requests/{projectId}")
+    public ResponseEntity<?> getJoinRequests(@PathVariable int projectId) {
+        try {
+            return ResponseEntity.ok(joinRequestService.getJoinRequestsByProjectId(projectId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to retrieve join requests"));
+        }
+    }
+}
