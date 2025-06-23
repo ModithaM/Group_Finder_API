@@ -2,6 +2,7 @@ package com.moditha.group_finder.controller;
 
 import com.moditha.group_finder.model.dto.JoinRequestDTO;
 import com.moditha.group_finder.service.JoinRequestService;
+import com.moditha.group_finder.service.ProjectMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import java.util.Map;
 public class JoinRequestController {
     @Autowired
     private JoinRequestService joinRequestService;
+    @Autowired
+    private ProjectMemberService projectMemberService;
 
     /**
      * Create a new join request.
@@ -67,6 +70,25 @@ public class JoinRequestController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Failed to update join request status"));
+        }
+    }
+
+    /**
+     * Leave a project.
+     *
+     * @param memberId  the ID of the member leaving the project.
+     * @param projectId the ID of the project to leave.
+     * @return ResponseEntity with a success message.
+     * @apiNote This is a private endpoint. Authentication required to access it.
+     */
+    @DeleteMapping("/{id}/leave/{pid}")
+    public ResponseEntity<?> leaveProject(@PathVariable("id") int memberId, @PathVariable("pid") int projectId) {
+        try {
+            projectMemberService.deleteProjectMember(projectId, memberId);
+            return ResponseEntity.ok(Map.of("message", "Left the project successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to leave the project"));
         }
     }
 }

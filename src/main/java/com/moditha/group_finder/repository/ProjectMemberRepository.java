@@ -3,7 +3,6 @@ package com.moditha.group_finder.repository;
 import com.moditha.group_finder.model.Project;
 import com.moditha.group_finder.model.ProjectMember;
 import com.moditha.group_finder.model.dto.ProjectMemberDTO;
-import com.moditha.group_finder.model.enums.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +27,7 @@ public interface ProjectMemberRepository extends JpaRepository<ProjectMember, In
 
     @Transactional
     void deleteByProjectId(int projectId);
+
+    @Transactional
+    void deleteByMemberIdAndProjectId(int memberId, int projectId);
 }

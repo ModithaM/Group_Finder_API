@@ -54,4 +54,12 @@ public class ProjectMemberService {
         }
         return project;
     }
+
+    public void deleteProjectMember(int projectId, int memberId) {
+        try {
+            projectMemberRepository.deleteByMemberIdAndProjectId(memberId, projectId);
+        } catch (Exception e) {
+            throw new ServerErrorException("Failed to delete project member: " + e.getMessage());
+        }
+    }
 }
