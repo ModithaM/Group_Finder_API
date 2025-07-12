@@ -29,8 +29,8 @@ services:
       DB_USER: root
       DB_PASSWORD: secret
       DB_DRIVER: com.mysql.cj.jdbc.Driver
-      JWT_SECRET: mysecret
-      JWT_EXPIRATION: 3600
+      JWT_SECRET: 3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
+      JWT_EXPIRATION: 3600000
 
 #volumes:
     #db_data:   if need persistent Db when compose up/down
